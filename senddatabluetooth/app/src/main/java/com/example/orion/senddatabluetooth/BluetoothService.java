@@ -73,8 +73,8 @@ public class BluetoothService extends Service {
             for (BluetoothDevice device : pairedDevices) {
                 String deviceName = device.getName();
                 Log.v("TEST",deviceName);
-                if(deviceName.contains("LAPTOP-EF96I227")) {
-                    Log.v("TEST","Connecting to Laptop");
+                if(deviceName.contains("raspberrypi")) {
+                    Log.v("TEST","Connecting to pi");
                     connect(device);
                     break;
                 }
