@@ -6,11 +6,14 @@ import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.SyncStateContract;
 import android.util.Log;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -50,6 +53,8 @@ public class BluetoothChatService {
     private ConnectedThread mConnectedThread;
     private int mState;
     private int mNewState;
+
+    String filename = "squatData";
 
     // Constants that indicate the current connection state
     public static final int STATE_NONE = 0;       // we're doing nothing
@@ -136,6 +141,8 @@ public class BluetoothChatService {
      */
     public synchronized void connect(BluetoothDevice device, boolean secure) {
         Log.d(TAG, "connect to: " + device);
+
+        filename = "squatData"+device.getName();
 
         // Cancel any thread attempting to make a connection
         if (mState == STATE_CONNECTING) {
@@ -491,6 +498,7 @@ public class BluetoothChatService {
                 try {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
+                    processData(buffer);
 
                     // Send the obtained bytes to the UI Activity
                     mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, buffer)
@@ -500,6 +508,24 @@ public class BluetoothChatService {
                     connectionLost();
                     break;
                 }
+            }
+
+        }
+        /***
+         * Process data read in by read command.
+         */
+        public void processData(byte[] buffer){
+            try{
+
+                File root = Environment.getExternalStorageDirectory();
+                File datalocation = new File(root.getAbsolutePath()+'/'+"SquatData");
+
+                FileOutputStream out = new FileOutputStream(datalocation.getAbsolutePath()+"/"+filename);
+                out.write(buffer);
+//              out.close();
+
+            }catch(IOException e){
+                Log.e(TAG, "exception during processData", e);
             }
         }
 

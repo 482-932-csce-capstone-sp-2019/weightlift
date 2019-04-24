@@ -12,8 +12,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Random;
 import java.util.Set;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity implements Handler.Callback{
     private static final String TAG = "BluetoothChat";
@@ -29,6 +33,15 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback{
     private String mConnectedDeviceLeft = "B8:27:EB:B9:CB:4C";
     private String mConnectedDeviceRight ="";
     private final static int REQUEST_ENABLE_BT = 1;
+    private int buttonStat = 0;
+//    // get the supported ids for GMT-08:00 (Pacific Standard Time)
+//    String[] ids = TimeZone.getAvailableIDs(-8 * 60 * 60 * 1000);
+//    // if no ids were returned, something is wrong. get out.
+//    SimpleTimeZone pdt = new SimpleTimeZone(-8 * 60 * 60 * 1000, ids[0]);
+//
+//    Calendar calendar = new GregorianCalendar(pdt);
+//    Date trialTime = new Date();
+//    calendar.setTime(trialTime);
 
 
 
@@ -64,16 +77,22 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback{
         send_data.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            if(mChatService.getState() == mChatService.STATE_CONNECTED){
-                Random rand = new Random();
-                int vasdf = rand.nextInt(4)+1;
-                mChatService.write((String.valueOf(vasdf)+"*").getBytes());
-            }
-            if(mChatServiceRight.getState() == mChatServiceRight.STATE_CONNECTED){
-                Random rand = new Random();
-                int vasdf = rand.nextInt(4)+1;
-                mChatServiceRight.write((String.valueOf(vasdf)+"*").getBytes());
-            }
+                if(buttonStat == 0){
+                    if(mChatService.getState() == mChatService.STATE_CONNECTED){
+                        Random rand = new Random();
+                        int vasdf = rand.nextInt(4)+1;
+                        mChatService.write((String.valueOf(vasdf)+"*").getBytes());
+                    }
+                    if(mChatServiceRight.getState() == mChatServiceRight.STATE_CONNECTED){
+                        Random rand = new Random();
+                        int vasdf = rand.nextInt(4)+1;
+                        mChatServiceRight.write((String.valueOf(vasdf)+"*").getBytes());
+                    }
+                }
+                else if(buttonStat == 1) {
+
+
+                }
             }
         });
         Log.d("onCreate","End");
