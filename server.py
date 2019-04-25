@@ -6,6 +6,9 @@
 
 from bluetooth import *
 import subprocess
+import sys
+import threading
+from bno055_simpletest import Bexample
 
 def randomfunction():
 
@@ -36,12 +39,36 @@ def randomfunction():
 
     cmd = 'sudo hciconfig hciX noscan'
     subprocess.check_output(cmd,shell = True)
+    proc = None
 
     try:
         while True:
             data = client_sock.recv(1024)
-            if len(data) == 0: break
             print("received [%s]" % data)
+            timestamp = 0
+            data = data.decode("utf-8")
+            print(data)
+            if ',' in data:
+                #timestamp = data.split(',')[0]
+                print("getting timestamp")
+
+            if "s" in data:
+                try:
+                    #Proc = subprocess.Popen(['sudo',"python3", "/home/pi/sensor/examples/bno055_simpletest.py"])
+                    #print(Proc)
+                    proc = Bexample()
+                    proc.start()
+                    print("Data Collection Started")
+                except:
+                    print("Error ",sys.exc_info())
+                
+            if ("p" in data):
+                try:
+                    proc.kill()
+                   #subprocess.check_call(["sudo","kill",str(Proc.pid)])
+                    print("Data Collection Stopped")
+                except:
+                    print("Error ",sys.exc_info())
     except IOError:
         print("disconnected")
         client_sock.close()
