@@ -12,12 +12,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Random;
 import java.util.Set;
-import java.util.Calendar;
 import java.util.TimeZone;
+import java.time.*;
 
 public class MainActivity extends AppCompatActivity implements Handler.Callback{
     private static final String TAG = "BluetoothChat";
@@ -31,19 +34,11 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback{
     private BluetoothChatService mChatServiceRight = null;
     private BluetoothAdapter mBluetoothAdapter = null;
     private String mConnectedDeviceLeft = "B8:27:EB:B9:CB:4C";
-    private String mConnectedDeviceRight ="";
+    private String mConnectedDeviceRight ="B8:27:EB:C1:70:29";
     private final static int REQUEST_ENABLE_BT = 1;
     private int buttonStat = 0;
-//    // get the supported ids for GMT-08:00 (Pacific Standard Time)
-//    String[] ids = TimeZone.getAvailableIDs(-8 * 60 * 60 * 1000);
-//    // if no ids were returned, something is wrong. get out.
-//    SimpleTimeZone pdt = new SimpleTimeZone(-8 * 60 * 60 * 1000, ids[0]);
-//
-//    Calendar calendar = new GregorianCalendar(pdt);
-//    Date trialTime = new Date();
-//    calendar.setTime(trialTime);
 
-
+    SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +52,10 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback{
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
 
         mhandler = new Handler(this);
-        mhandlerRight = new Handler(this);
+//        mhandlerRight = new Handler(this);
 
-        mChatService = new BluetoothChatService(this,mhandler);
-        mChatServiceRight = new BluetoothChatService(this,mhandlerRight);
+        mChatService = new BluetoothChatService(this,mhandler,true);
+        mChatServiceRight = new BluetoothChatService(this,mhandler,false);
 
         for(BluetoothDevice bldevice : pairedDevices){
             //bldevice.getAddress()
@@ -69,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback{
                 mChatService.connect(bldevice,false);
             }
             if(bldevice.getAddress().contains(mConnectedDeviceRight)){
-                mChatService.connect(bldevice,false);
+                mChatServiceRight.connect(bldevice,false);
             }
 
         }
@@ -77,21 +72,58 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback{
         send_data.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                send_data.setBackground(getResources().getDrawable(R.drawable.buttonselector));
+                long millis = System.currentTimeMillis() % 1000;
                 if(buttonStat == 0){
                     if(mChatService.getState() == mChatService.STATE_CONNECTED){
-                        Random rand = new Random();
-                        int vasdf = rand.nextInt(4)+1;
-                        mChatService.write((String.valueOf(vasdf)+"*").getBytes());
+
+                        String stringdate = new Date().toString();
+                        ParsePosition pos = new ParsePosition(0);
+                        SimpleDateFormat simpledateformat = sdf;
+                        Date stringDate = simpledateformat.parse(stringdate, pos);
+
+                        //long milliSex = mdate.getTime();
+                        mChatService.write((String.valueOf(millis)+", S").getBytes());
                     }
                     if(mChatServiceRight.getState() == mChatServiceRight.STATE_CONNECTED){
-                        Random rand = new Random();
-                        int vasdf = rand.nextInt(4)+1;
-                        mChatServiceRight.write((String.valueOf(vasdf)+"*").getBytes());
+                        String stringdate = sdf.format(new Date());
+                        Date mDate = null;
+                        try {
+                            mDate = sdf.parse(stringdate);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        //long milliSex = mdate.getTime();
+                        mChatService.write((String.valueOf(millis)+", S").getBytes());
                     }
+                    send_data.setText("Stop");
+                    buttonStat = 1;
                 }
                 else if(buttonStat == 1) {
-
-
+                    if(mChatService.getState() == mChatService.STATE_CONNECTED){
+                        String stringdate = sdf.format(new Date());
+                        Date mDate = null;
+                        try {
+                            mDate = sdf.parse(stringdate);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        //long milliSex = mdate.getTime();
+                        mChatService.write((String.valueOf(millis)+", P").getBytes());
+                    }
+                    if(mChatServiceRight.getState() == mChatServiceRight.STATE_CONNECTED){
+                        String stringdate = sdf.format(new Date());
+                        Date mDate = null;
+                        try {
+                            mDate = sdf.parse(stringdate);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        //long milliSex = mdate.getTime();
+                        mChatService.write((String.valueOf(millis)+", P").getBytes());
+                    }
+                    send_data.setText("Start");
+                    buttonStat = 0;
                 }
             }
         });
