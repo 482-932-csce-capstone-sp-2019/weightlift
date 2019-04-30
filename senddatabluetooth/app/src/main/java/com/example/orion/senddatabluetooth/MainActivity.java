@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback{
             @Override
             public void onClick(View v) {
                 send_data.setBackground(getResources().getDrawable(R.drawable.buttonselector));
-                long millis = System.currentTimeMillis() % 1000;
+                long millis = System.currentTimeMillis();
                 if(buttonStat == 0){
                     if(mChatService.getState() == mChatService.STATE_CONNECTED){
 
@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback{
                             e.printStackTrace();
                         }
                         //long milliSex = mdate.getTime();
-                        mChatService.write((String.valueOf(millis)+", S").getBytes());
+                        mChatServiceRight.write((String.valueOf(millis)+", S").getBytes());
                     }
                     send_data.setText("Stop");
                     buttonStat = 1;
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback{
                             e.printStackTrace();
                         }
                         //long milliSex = mdate.getTime();
-                        mChatService.write((String.valueOf(millis)+", P").getBytes());
+                        mChatServiceRight.write((String.valueOf(millis)+", P").getBytes());
                     }
                     send_data.setText("Start");
                     buttonStat = 0;
