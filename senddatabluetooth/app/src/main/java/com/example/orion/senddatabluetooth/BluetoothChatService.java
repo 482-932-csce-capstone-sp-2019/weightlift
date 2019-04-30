@@ -500,12 +500,13 @@ public class BluetoothChatService {
             while (mState == STATE_CONNECTED) {
                 try {
                     // Read from the InputStream
-                    bytes = mmInStream.read(buffer);
-                    processData(buffer);
+                    bytes = mmInStream.read(buffer,0,buffer.length);
+
+                    mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, buffer)
+                                .sendToTarget();
 
                     // Send the obtained bytes to the UI Activity
-                    mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, buffer)
-                            .sendToTarget();
+
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
                     connectionLost();

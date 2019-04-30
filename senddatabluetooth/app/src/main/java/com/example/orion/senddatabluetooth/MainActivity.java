@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback{
     private Button send_data;
     private TextView DataViewRight;
     private TextView DataView;
+    private TextView squatResponse;
 
     private Handler mhandler = null;
     private Handler mhandlerRight = null;
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback{
         setContentView(R.layout.activity_main);
         DataView = (TextView)findViewById(R.id.connectionstatus);
         DataViewRight = (TextView)findViewById(R.id.connectionstatus2);
+        squatResponse = (TextView)findViewById(R.id.serveReply);
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback{
 //        mhandlerRight = new Handler(this);
 
         mChatService = new BluetoothChatService(this,mhandler,true);
-        mChatServiceRight = new BluetoothChatService(this,mhandler,false);
+        //mChatServiceRight = new BluetoothChatService(this,mhandler,false);
 
         for(BluetoothDevice bldevice : pairedDevices){
             //bldevice.getAddress()
@@ -63,9 +65,9 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback{
             if(bldevice.getAddress().contains(mConnectedDeviceLeft)){
                 mChatService.connect(bldevice,false);
             }
-            if(bldevice.getAddress().contains(mConnectedDeviceRight)){
-                mChatServiceRight.connect(bldevice,false);
-            }
+//            if(bldevice.getAddress().contains(mConnectedDeviceRight)){
+//                mChatServiceRight.connect(bldevice,false);
+//            }
 
         }
         send_data = (Button) findViewById(R.id.senddata);
@@ -83,19 +85,19 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback{
                         Date stringDate = simpledateformat.parse(stringdate, pos);
 
                         //long milliSex = mdate.getTime();
-                        mChatService.write((String.valueOf(millis)+", S").getBytes());
+                        mChatService.write((String.valueOf(millis)+", s").getBytes());
                     }
-                    if(mChatServiceRight.getState() == mChatServiceRight.STATE_CONNECTED){
-                        String stringdate = sdf.format(new Date());
-                        Date mDate = null;
-                        try {
-                            mDate = sdf.parse(stringdate);
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                        //long milliSex = mdate.getTime();
-                        mChatServiceRight.write((String.valueOf(millis)+", S").getBytes());
-                    }
+//                    if(mChatServiceRight.getState() == mChatServiceRight.STATE_CONNECTED){
+//                        String stringdate = sdf.format(new Date());
+//                        Date mDate = null;
+//                        try {
+//                            mDate = sdf.parse(stringdate);
+//                        } catch (ParseException e) {
+//                            e.printStackTrace();
+//                        }
+//                        //long milliSex = mdate.getTime();
+//                        mChatServiceRight.write((String.valueOf(millis)+", s").getBytes());
+//                    }
                     send_data.setText("Stop");
                     buttonStat = 1;
                 }
@@ -109,19 +111,19 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback{
                             e.printStackTrace();
                         }
                         //long milliSex = mdate.getTime();
-                        mChatService.write((String.valueOf(millis)+", P").getBytes());
+                        mChatService.write((String.valueOf(millis)+", p").getBytes());
                     }
-                    if(mChatServiceRight.getState() == mChatServiceRight.STATE_CONNECTED){
-                        String stringdate = sdf.format(new Date());
-                        Date mDate = null;
-                        try {
-                            mDate = sdf.parse(stringdate);
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                        //long milliSex = mdate.getTime();
-                        mChatServiceRight.write((String.valueOf(millis)+", P").getBytes());
-                    }
+//                    if(mChatServiceRight.getState() == mChatServiceRight.STATE_CONNECTED){
+//                        String stringdate = sdf.format(new Date());
+//                        Date mDate = null;
+//                        try {
+//                            mDate = sdf.parse(stringdate);
+//                        } catch (ParseException e) {
+//                            e.printStackTrace();
+//                        }
+//                        //long milliSex = mdate.getTime();
+//                        mChatServiceRight.write((String.valueOf(millis)+", p").getBytes());
+//                    }
                     send_data.setText("Start");
                     buttonStat = 0;
                 }
@@ -154,9 +156,9 @@ Log.d("onStart","else if mChatService == null");
         if (mChatService != null) {
             mChatService.stop();
         }
-        if (mChatServiceRight != null) {
-            mChatServiceRight.stop();
-        }
+//        if (mChatServiceRight != null) {
+//            mChatServiceRight.stop();
+//        }
 
     }
     @Override
@@ -175,13 +177,13 @@ Log.d("onStart","else if mChatService == null");
                 mChatService.start();
             }
         }
-        if (mChatServiceRight != null) {
-            // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mChatServiceRight.getState() == BluetoothChatService.STATE_NONE) {
-                // Start the Bluetooth chat services
-                mChatServiceRight.start();
-            }
-        }
+//        if (mChatServiceRight != null) {
+//            // Only if the state is STATE_NONE, do we know that we haven't started already
+//            if (mChatServiceRight.getState() == BluetoothChatService.STATE_NONE) {
+//                // Start the Bluetooth chat services
+//                mChatServiceRight.start();
+//            }
+//        }
     }
 
     @Override
@@ -201,22 +203,28 @@ Log.d("onStart","else if mChatService == null");
                    }
                }
                DataView.setText(MessageStatus[message.arg1]);
-               DataViewRight.setText(MessageStatus[message.arg1]);
                break;
 
             case Constants.MESSAGE_STATE_CHANGE_Right:
-                if(MessageStatus[message.arg1] == "STATE_LISTEN")
-                {
-                    mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                    Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-                    for(BluetoothDevice bldevice : pairedDevices){
-                        if(bldevice.getName().contains(mConnectedDeviceRight)){
-                            mChatServiceRight.connect(bldevice,true);
-                        }
-                    }
-                }
-                DataView.setText(MessageStatus[message.arg1]);
+//                if(MessageStatus[message.arg1] == "STATE_LISTEN")
+//                {
+//                    mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+//                    Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+//                    for(BluetoothDevice bldevice : pairedDevices){
+//                        if(bldevice.getName().contains(mConnectedDeviceRight)){
+//                            mChatServiceRight.connect(bldevice,true);
+//                        }
+//                    }
+//                }
                 DataViewRight.setText(MessageStatus[message.arg1]);
+                break;
+            case Constants.MESSAGE_READ:
+                if(message.arg1 != 0){
+                    String s = new String((byte[]) message.obj);
+                    squatResponse.setText(s);}
+                else{
+                    squatResponse.setText("No Data");
+                    }
                 break;
         }
         return true;
