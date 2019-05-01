@@ -53,6 +53,7 @@ public class BluetoothChatService {
     private ConnectedThread mConnectedThread;
     private int mState;
     private int mNewState;
+    private boolean left;
 
     String filename = "squatData";
 
@@ -68,11 +69,13 @@ public class BluetoothChatService {
      * @param context The UI Activity Context
      * @param handler A Handler to send messages back to the UI Activity
      */
-    public BluetoothChatService(Context context, Handler handler) {
+    public BluetoothChatService(Context context, Handler handler,boolean left) {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         mState = STATE_NONE;
         mNewState = mState;
         mHandler = handler;
+        left = left;
+
     }
 
     /**
@@ -84,10 +87,10 @@ public class BluetoothChatService {
         mNewState = mState;
 
         // Give the new state to the Handler so the UI Activity can update
-        if(this.mHandler.toString() == "mhandler" ){
+        if(left){
             mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE_Left, mNewState, -1).sendToTarget();
         }
-        else if(this.mHandler.toString() == "mhandlerRight"){
+        else{
             mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE_Right, mNewState, -1).sendToTarget();
         }
 
@@ -497,12 +500,13 @@ public class BluetoothChatService {
             while (mState == STATE_CONNECTED) {
                 try {
                     // Read from the InputStream
-                    bytes = mmInStream.read(buffer);
-                    processData(buffer);
+                    bytes = mmInStream.read(buffer,0,buffer.length);
+
+                    mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, buffer)
+                                .sendToTarget();
 
                     // Send the obtained bytes to the UI Activity
-                    mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, buffer)
-                            .sendToTarget();
+
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
                     connectionLost();
