@@ -1,7 +1,10 @@
-Will become a heading
+Weightlifting Wearable - Identifying Squats
 ==============
 
-Will become a sub heading
+Design documentation
+--------------
+
+API Specification 
 --------------
 
 *This will be Italic*
