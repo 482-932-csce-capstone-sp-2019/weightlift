@@ -2,6 +2,8 @@ Weightlifting Wearable - Identifying Squats
 ==============
 :exclamation: **For Design Documentation, API Specification, and Contribution Guide go to this github WIKI** :exclamation:
 
+
+
 <img src="https://i.imgur.com/yTDPUf9.jpg" alt="Phone App" align="right" />
 
 The weightlifting wearable aims to track and correct form for the common squat exercise. This is done by a system of IMU's, Raspberry PI's, and an android application.
