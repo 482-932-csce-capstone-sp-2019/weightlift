@@ -5,6 +5,8 @@ import time
 import numpy
 from operator import itemgetter
 
+#This function reads the sensor data file and outputs the center of all the files
+#In this case the center would be a mean of all the accelerometer data in the file
 def compute():
 
     work = os.getcwd()
@@ -12,7 +14,8 @@ def compute():
     print(filepath)
 
     f = open(filepath,'r')
-    f2 = open("goodsquats.txt",'a+')
+    #This opens the goodsquat or badsquat file to compute the centers for the data
+    #f2 = open("goodsquats.txt",'a+')
 
     lines = f.read().split(' ')
     data = []
@@ -23,6 +26,7 @@ def compute():
     y = []
     z = []
 
+    #Converts tuple in the text file to real tuples.
     for line in lines:
        # line =  line.rstrip('\n')
         line = line.strip()
@@ -50,7 +54,7 @@ def compute():
         y.append(b)
         z.append(c)
 
-    
+    #Computes mean for tuples
     mean = tuple(numpy.mean(tuples2,axis=0))
     
     print("X MAX ",max(x))
@@ -61,6 +65,8 @@ def compute():
     print("Z MIN ",min(z))
     
     print('mean: ',mean)
+    #The averages for the good and bad squat data are written into
+    #goodsquat.txt or badsquat.txt
    # f2.write(str(mean))
 
     return (mean)
